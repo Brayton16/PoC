@@ -1,59 +1,38 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { api } from '../utils/api'
 import { toast } from 'react-toastify'
 
 interface Props {
   isOpen: boolean
   onClose: () => void
-  activo: {
-    id: number
-    nombre: string
-    descripcion: string
-    valor_monetario: number
-  }
-  onUpdated: () => void
+  usuario: { id: number; nombre: string; correo: string }
 }
 
-export default function EditarActivoModal({ isOpen, onClose, activo, onUpdated }: Props) {
-  const [form, setForm] = useState({
-    nombre: '',
-    descripcion: '',
-    valor_monetario: '',
-  })
+export default function EditarPerfilModal({ isOpen, onClose, usuario }: Props) {
+  const [form, setForm] = useState({ nombre: usuario.nombre, correo: usuario.correo, password: '' })
 
-  useEffect(() => {
-    if (activo) {
-      setForm({
-        nombre: activo.nombre,
-        descripcion: activo.descripcion,
-        valor_monetario: String(activo.valor_monetario),
-      })
-    }
-  }, [activo])
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setForm(prev => ({ ...prev, [name]: value }))
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      await api.put(`/token/${activo.id}`, form)
-      toast.success('Activo actualizado')
-      onUpdated()
+      await api.put(`/usuarios/actualizar/${usuario.id}`, form)
+      toast.success('Perfil actualizado correctamente')
+      onClose()
     } catch (error) {
-      console.error('Error actualizando activo:', error)
-      toast.error('Error al actualizar activo')
+      console.error('Error al actualizar perfil:', error)
+      toast.error('Error al actualizar perfil')
     }
   }
 
-  if (!isOpen || !activo) return null
+  if (!isOpen) return null
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
       <div className="bg-white dark:bg-neutral-900 p-6 rounded-lg w-full max-w-md">
-        <h2 className="text-lg font-semibold mb-4 text-center text-black dark:text-white">Editar Activo</h2>
+        <h2 className="text-lg font-semibold mb-4 text-center">Editar Perfil</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
@@ -62,25 +41,22 @@ export default function EditarActivoModal({ isOpen, onClose, activo, onUpdated }
             onChange={handleChange}
             className="w-full p-2 border rounded bg-gray-100 dark:bg-gray-800 text-black dark:text-white"
             placeholder="Nombre"
-            required
-          />
-          <textarea
-            name="descripcion"
-            value={form.descripcion}
-            onChange={handleChange}
-            className="w-full p-2 border rounded bg-gray-100 dark:bg-gray-800 text-black dark:text-white"
-            placeholder="Descripción"
-            rows={3}
-            required
           />
           <input
-            type="number"
-            name="valor_monetario"
-            value={form.valor_monetario}
+            type="email"
+            name="correo"
+            value={form.correo}
             onChange={handleChange}
             className="w-full p-2 border rounded bg-gray-100 dark:bg-gray-800 text-black dark:text-white"
-            placeholder="Valor Monetario"
-            required
+            placeholder="Correo"
+          />
+          <input
+            type="password"
+            name="password"
+            value={form.password}
+            onChange={handleChange}
+            className="w-full p-2 border rounded bg-gray-100 dark:bg-gray-800 text-black dark:text-white"
+            placeholder="Nueva contraseña (opcional)"
           />
           <div className="flex justify-end gap-2">
             <button type="button" onClick={onClose} className="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded">Cancelar</button>

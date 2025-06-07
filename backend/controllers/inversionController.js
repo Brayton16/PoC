@@ -3,7 +3,6 @@ import sql from '../config/db.js';
 export const crearInversion = async (req, res) => {
     const { activo_id, monto_invertido, fraccion } = req.body;
     const usuario_id = req.userId; 
-    console.log('Datos de inversión:', { usuario_id, activo_id, monto_invertido, fraccion });
     try {
         const result = await sql`
             SELECT * FROM fn_crear_inversion(${usuario_id}, ${activo_id}, ${monto_invertido}, ${fraccion})
@@ -22,7 +21,6 @@ export const listarInversiones = async (req, res) => {
         const result = await sql`
             SELECT * FROM fn_listar_inversiones_usuario(${usuario_id})
         `
-        console.log('Inversiones del usuario:', result);
         res.status(200).json(result);
     } catch (error) {
         console.error(error);

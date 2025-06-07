@@ -31,7 +31,6 @@ export default function Activos() {
     <div className="p-6 max-w-4xl mx-auto">
       <h1 className="text-3xl font-bold mb-6">Descubre Activos para Invertir</h1>
       {activos.map((activo: Activo) => (
-        console.log('Activo:', activo),
         <ActivoCard
           key={activo.id}
           id={activo.id}

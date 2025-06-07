@@ -1,4 +1,5 @@
 import sql from '../config/db.js'
+import bcrypt from 'bcryptjs'
 
 export const actualizarUsuario = async (req, res) => {
   const { id } = req.params;
@@ -19,7 +20,8 @@ export const actualizarUsuario = async (req, res) => {
 
   if (password !== undefined && password !== null && password.trim() !== '') {
     campos.push(`password = $${campos.length + 1}`);
-    valores.push(password);
+    const hashedPassword = await bcrypt.hash(password, 10)
+    valores.push(hashedPassword);
   }
 
   if (campos.length === 0) {

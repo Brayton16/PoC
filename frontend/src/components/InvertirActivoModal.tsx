@@ -1,5 +1,5 @@
 // src/components/InvertirActivoModal.tsx
-import React, { useState } from 'react'
+import React, { use, useState, useEffect } from 'react'
 import { api } from '../utils/api'
 import { toast } from 'react-toastify'
 
@@ -12,12 +12,29 @@ interface Props {
 
 export default function InvertirActivoModal({ isOpen, onClose, activo, onInvested }: Props) {
   const [monto, setMonto] = useState('')
+  const [wallet, setWallet] = useState<any>(null)
+
+  useEffect(() => {
+    const fetchWallet = async () => {
+      const walletRes = await api.get(`/wallet/usuario/${activo.usuario_id}`)
+      setWallet(walletRes.data)
+    }
+    if (activo && activo.usuario_id) {
+      fetchWallet()
+    }
+  }, [activo])
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    console.log('Invirtiendo en activo:', activo)
     if (!monto || Number(monto) <= 0) {
       return toast.error('Ingrese un monto válido')
+    }
+    if (Number(monto) > activo.valor) {
+      return toast.error('El monto no puede ser mayor al valor del activo')
+    }
+    if (!wallet || wallet.valor_total < parseFloat(monto)) {
+      return toast.error('Saldo insuficiente en la wallet')
     }
     try {
       await api.post('/inversiones', {

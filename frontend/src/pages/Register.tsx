@@ -46,7 +46,6 @@ export default function Register() {
     e.preventDefault()
     if (!validate()) return
     try {
-        console.log('Formulario enviado:', form)
         await api.post('/auth/register', {
             nombre: form.nombre,
             correo: form.correo,

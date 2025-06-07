@@ -7,27 +7,28 @@ import { getUserData } from '../services/userService';
 import { getUserActivos, getUserTransacciones } from '../services/transaccionesService';
 import { toast } from 'react-toastify';
 import EliminarActivoModal from '../components/EliminarActivoModal';
-import EditarActivoModal from '../components/EditarPerfilModal';
+import EditarActivoModal from '../components/ModificarActivoModal';
+import EditarWalletModal from '../components/ActualizarWallet';
 
 const Perfil = () => {
   const { user } = useAuth();
-  const [userData, setUserData] = useState({ id: 0, nombre: '', correo: '' });
+  const [userData, setUserData] = useState({ id: 0, nombre: '', correo: '', password: '' });
   const [activos, setActivos] = useState([]);
   const [inversiones, setInversiones] = useState([]);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [activoIdEliminar, setActivoIdEliminar] = useState<number | null>(null);
   const [activoEditar, setActivoEditar] = useState<any | null>(null);
+  const [wallets, setWallets] = useState<any[]>([]);
+  const [walletEditar, setWalletEditar] = useState<any | null>(null);
 
   const handleEditarActivo = (activo: any) => {
-    console.log('Editar activo:', activo);
     setActivoEditar(activo);
   };
 
   useEffect(() => {
     const fetchUserData = async () => {
       if (user) {
-        console.log('Cargando datos del usuario:', user);
         try {
           const resUserData = await getUserData(user.id);
           setUserData(resUserData);
@@ -35,10 +36,8 @@ const Perfil = () => {
           setActivos(resActivos);
           const resInversiones = await getUserTransacciones(user.id);
           setInversiones(resInversiones);
-
-          console.log('Datos del usuario:', resUserData);
-          console.log('Activos del usuario:', resActivos);
-          console.log('Inversiones del usuario:', resInversiones);
+          const resWallets = await api.get(`/wallet/usuario/${user.id}`);
+          setWallets(resWallets.data);
         } catch (error) {
           console.error('Error al obtener datos del usuario:', error);
         }
@@ -66,6 +65,12 @@ const Perfil = () => {
             className="px-4 py-2 text-sm font-medium bg-red-500 hover:bg-red-600 text-white rounded-md"
           >
             Eliminar Cuenta
+          </button>
+          <button
+            onClick={() => setWalletEditar(true)}
+            className="px-4 py-2 text-sm font-medium bg-black hover:bg-yellow-400 hover:text-black text-yellow-400 rounded-md"
+          >
+            Editar Wallet
           </button>
         </div>
       </div>
@@ -182,6 +187,19 @@ const Perfil = () => {
             }}
         />
         )}
+
+      { walletEditar && (
+        <EditarWalletModal
+          isOpen={true}
+          onClose={() => setWalletEditar(null)}
+          wallet={wallets}
+          onUpdated={() => {
+            setWalletEditar(null);
+            toast.success('Wallet actualizada correctamente');
+            window.location.reload();
+          }}
+        />
+      )}
 
     </div>
   );

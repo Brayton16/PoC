@@ -16,7 +16,11 @@ export default function Topbar() {
         localStorage.setItem('theme', next ? 'dark' : 'light')
         return next
         })
-        console.log(user)
+    }
+
+    const cerrarSesion = () => {
+        localStorage.removeItem('token')
+        window.location.href = '/login'
     }
 
     useEffect(() => {
@@ -73,6 +77,7 @@ export default function Topbar() {
             className="h-8 w-8 rounded-full"
             />
             <Link to='/Perfil' className="font-semibold text-gray-700 dark:text-gray-200">{user?.nombre || 'Usuario'}</Link>
+            <button onClick={() => cerrarSesion()} className='bg-yellow-400 bg-yellow-500 text-black px-3 py-1 rounded'>Cerrar sesión</button>
         </div>
     </header>
   );

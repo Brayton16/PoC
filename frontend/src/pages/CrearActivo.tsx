@@ -40,7 +40,6 @@ export default function CrearActivo() {
     })
 
     try {
-      console.log('Enviando datos del activo:', data)
       await api.post('/token', data,{
         headers: {
           'Content-Type': 'multipart/form-data',
