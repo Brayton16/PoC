@@ -202,8 +202,66 @@ Elimina una inversión a partir de su ID.
 - Se devuelve un mensaje de confirmación.
     
 ### 💳 Wallet funcional con saldo e inversiones
+Este módulo permite al usuario visualizar su saldo actual y una simulación de ganancias y gastos mensuales. Si bien los montos de ingresos y egresos son estáticos, el saldo disponible puede ser modificado manualmente desde la interfaz.
+
+1. Visualización de Saldo y Métricas
+Muestra al usuario el estado general de su wallet mediante información clave sobre su saldo.
+- El dashboard principal muestra el total de saldo, junto con dos métricas adicionales: “Ganado este mes” y “Gastado este mes”.
+- Estas dos métricas están definidas con valores fijos y no responden a la actividad del usuario.
+
+2. Edición de Saldo Total
+Permite al usuario actualizar manualmente su saldo disponible.
+- El usuario puede modificar manualmente el valor del saldo desde la sección “Editar wallet” ubicada dentro del perfil.
+- Este valor se guarda de forma local en el frontend (mock), sin persistencia real en base de datos.
+
+3. Transacciones Simuladas
+Despliega una lista de movimientos financieros predefinidos para ilustrar la actividad.
+- La tabla de movimientos muestra una serie de transacciones estáticas (mockTransactions), clasificadas por tipo (activo o inversión), monto y fecha.
+- No hay lógica para agregar, eliminar o modificar estas transacciones desde la interfaz.
+
+4. Gráfico de Actividad
+Presenta un resumen visual del comportamiento financiero reciente en forma de gráfico.
+- Se visualiza un gráfico de barras que representa las ganancias y gastos durante los últimos 30 días.
+- El gráfico es generado con un conjunto de datos mock definidos por el sistema, sin conexión a los movimientos reales del usuario.
+
 ### 🗃️ Panel de administración de activos
+Este componente se encuentra en el dashboard, al costado izquierdo, y permite visualizar y gestionar los activos de un usuario.
+
+1. Visualización General
+Permite ver el inventario completo de activos, incluyendo los creados por el sistema y por el usuario.
+- Muestra una lista de activos disponibles, incluyendo tanto activos predeterminados como los creados por el usuario.
+- Cada activo incluye nombre, descripción, valor e imagen.
+    
+2. Creación de Nuevos Activos
+Habilita al usuario para registrar nuevos activos con sus características e imagen.
+- El usuario puede crear nuevos activos desde un formulario en el sistema.
+- Al crear un activo, se pueden subir imágenes asociadas.
+- Los activos generados por el usuario se almacenan en la sección de “Perfil” bajo el apartado “Mis activos”.
+
+3. Eliminación de Activos
+Permite eliminar únicamente los activos personales creados por el usuario.
+- Solo los activos creados por el usuario pueden ser eliminados desde la sección “Mis activos”.
+- Los activos predeterminados no pueden ser modificados ni eliminados.
+
 ### 🔎 Buscador en navbar
+Este módulo permite a los usuarios buscar activos mediante texto libre ingresado desde la barra de navegación superior.
+1. Entrada de Búsqueda
+Recoge el término de búsqueda ingresado y lo envía para su procesamiento.
+- La barra de búsqueda acepta texto que se compara con los nombres de los activos existentes.
+- La búsqueda se activa al presionar el botón “Buscar”.
+
+2. Procesamiento Backend
+Recibe la solicitud de búsqueda y devuelve los resultados relevantes.
+- Se utiliza una consulta SQL con comparación insensible a mayúsculas para filtrar los activos:
+    ```sql
+    SELECT * FROM activos_tokenizados WHERE LOWER(nombre) LIKE '%query%'
+    ```
+- El endpoint encargado de este proceso es buscarActivos.
+
+3. Visualización de Resultados
+Muestra los resultados filtrados en una nueva vista especializada.
+- Al ejecutar la búsqueda, se redirige a una nueva vista que muestra exclusivamente los activos que coinciden con el término ingresado.
+- Esta vista mantiene el mismo estilo visual que el panel de activos, pero limita su contenido a los resultados filtrados.    
 
 ---
 
